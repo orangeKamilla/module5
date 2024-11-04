@@ -51,9 +51,7 @@ $(function () {
         showLoading("#main-content");
         $ajaxUtils.sendGetRequest(
             allCategoriesUrl,
-            function (categories) {
-                buildAndShowHomeHTML(categories);
-            },
+            buildAndShowHomeHTML,
             true
         );
     });
@@ -61,6 +59,7 @@ $(function () {
     function buildAndShowHomeHTML(categories) {
         $ajaxUtils.sendGetRequest(homeHtmlUrl, function (homeHtml) {
             var chosenCategoryShortName = chooseRandomCategory(categories).short_name;
+
             homeHtml = insertProperty(homeHtml, "randomCategoryShortName", chosenCategoryShortName);
             insertHtml("#main-content", homeHtml);
         }, false);
@@ -85,6 +84,7 @@ $(function () {
         $ajaxUtils.sendGetRequest(categoriesTitleHtml, function (categoriesTitleHtml) {
             $ajaxUtils.sendGetRequest(categoryHtml, function (categoryHtml) {
                 switchMenuToActive();
+
                 var categoriesViewHtml = buildCategoriesViewHtml(categories, categoriesTitleHtml, categoryHtml);
                 insertHtml("#main-content", categoriesViewHtml);
             }, false);
@@ -94,6 +94,7 @@ $(function () {
     function buildCategoriesViewHtml(categories, categoriesTitleHtml, categoryHtml) {
         var finalHtml = categoriesTitleHtml;
         finalHtml += "<section class='row'>";
+
         for (var i = 0; i < categories.length; i++) {
             var html = categoryHtml;
             var name = "" + categories[i].name;
@@ -102,6 +103,7 @@ $(function () {
             html = insertProperty(html, "short_name", short_name);
             finalHtml += html;
         }
+
         finalHtml += "</section>";
         return finalHtml;
     }
@@ -110,6 +112,7 @@ $(function () {
         $ajaxUtils.sendGetRequest(menuItemsTitleHtml, function (menuItemsTitleHtml) {
             $ajaxUtils.sendGetRequest(menuItemHtml, function (menuItemHtml) {
                 switchMenuToActive();
+
                 var menuItemsViewHtml = buildMenuItemsViewHtml(categoryMenuItems, menuItemsTitleHtml, menuItemHtml);
                 insertHtml("#main-content", menuItemsViewHtml);
             }, false);
@@ -119,8 +122,10 @@ $(function () {
     function buildMenuItemsViewHtml(categoryMenuItems, menuItemsTitleHtml, menuItemHtml) {
         menuItemsTitleHtml = insertProperty(menuItemsTitleHtml, "name", categoryMenuItems.category.name);
         menuItemsTitleHtml = insertProperty(menuItemsTitleHtml, "special_instructions", categoryMenuItems.category.special_instructions);
+
         var finalHtml = menuItemsTitleHtml;
         finalHtml += "<section class='row'>";
+
         var menuItems = categoryMenuItems.menu_items;
         var catShortName = categoryMenuItems.category.short_name;
         for (var i = 0; i < menuItems.length; i++) {
@@ -133,11 +138,14 @@ $(function () {
             html = insertItemPortionName(html, "large_portion_name", menuItems[i].large_portion_name);
             html = insertProperty(html, "name", menuItems[i].name);
             html = insertProperty(html, "description", menuItems[i].description);
+
             if (i % 2 !== 0) {
                 html += "<div class='clearfix visible-lg-block visible-md-block'></div>";
             }
+
             finalHtml += html;
         }
+
         finalHtml += "</section>";
         return finalHtml;
     }
@@ -146,6 +154,7 @@ $(function () {
         if (!priceValue) {
             return insertProperty(html, pricePropName, "");
         }
+
         priceValue = "$" + priceValue.toFixed(2);
         html = insertProperty(html, pricePropName, priceValue);
         return html;
@@ -155,6 +164,7 @@ $(function () {
         if (!portionValue) {
             return insertProperty(html, portionPropName, "");
         }
+
         portionValue = "(" + portionValue + ")";
         html = insertProperty(html, portionPropName, portionValue);
         return html;
