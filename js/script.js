@@ -8,13 +8,16 @@ $(function () {
 });
 
 (function (global) {
+
     var dc = {};
 
     var homeHtmlUrl = "snippets/home-snippet.html";
-    var allCategoriesUrl = "https://coursera-jhu-default-rtdb.firebaseio.com/categories.json";
+    var allCategoriesUrl =
+        "https://coursera-jhu-default-rtdb.firebaseio.com/categories.json";
     var categoriesTitleHtml = "snippets/categories-title-snippet.html";
     var categoryHtml = "snippets/category-snippet.html";
-    var menuItemsUrl = "https://coursera-jhu-default-rtdb.firebaseio.com/menu_items/";
+    var menuItemsUrl =
+        "https://coursera-jhu-default-rtdb.firebaseio.com/menu_items/";
     var menuItemsTitleHtml = "snippets/menu-items-title.html";
     var menuItemHtml = "snippets/menu-item.html";
 
@@ -51,18 +54,19 @@ $(function () {
         showLoading("#main-content");
         $ajaxUtils.sendGetRequest(
             allCategoriesUrl,
-            buildAndShowHomeHTML,
-            true
-        );
+            buildAndShowHomeHTML, // STEP 1
+            true);
     });
 
     function buildAndShowHomeHTML(categories) {
-        $ajaxUtils.sendGetRequest(homeHtmlUrl, function (homeHtml) {
-            var chosenCategoryShortName = chooseRandomCategory(categories).short_name;
-
-            homeHtml = insertProperty(homeHtml, "randomCategoryShortName", chosenCategoryShortName);
-            insertHtml("#main-content", homeHtml);
-        }, false);
+        $ajaxUtils.sendGetRequest(
+            homeHtmlUrl,
+            function (homeHtml) {
+                var chosenCategoryShortName = chooseRandomCategory(categories).short_name; // STEP 2
+                var homeHtmlToInsertIntoMainPage = insertProperty(homeHtml, "randomCategoryShortName", "'" + chosenCategoryShortName + "'"); // STEP 3
+                insertHtml("#main-content", homeHtmlToInsertIntoMainPage); // STEP 4
+            },
+            false);
     }
 
     function chooseRandomCategory(categories) {
@@ -72,23 +76,33 @@ $(function () {
 
     dc.loadMenuCategories = function () {
         showLoading("#main-content");
-        $ajaxUtils.sendGetRequest(allCategoriesUrl, buildAndShowCategoriesHTML);
+        $ajaxUtils.sendGetRequest(
+            allCategoriesUrl,
+            buildAndShowCategoriesHTML);
     };
 
     dc.loadMenuItems = function (categoryShort) {
         showLoading("#main-content");
-        $ajaxUtils.sendGetRequest(menuItemsUrl + categoryShort + ".json", buildAndShowMenuItemsHTML);
+        $ajaxUtils.sendGetRequest(
+            menuItemsUrl + categoryShort + ".json",
+            buildAndShowMenuItemsHTML);
     };
 
     function buildAndShowCategoriesHTML(categories) {
-        $ajaxUtils.sendGetRequest(categoriesTitleHtml, function (categoriesTitleHtml) {
-            $ajaxUtils.sendGetRequest(categoryHtml, function (categoryHtml) {
-                switchMenuToActive();
-
-                var categoriesViewHtml = buildCategoriesViewHtml(categories, categoriesTitleHtml, categoryHtml);
-                insertHtml("#main-content", categoriesViewHtml);
-            }, false);
-        }, false);
+        $ajaxUtils.sendGetRequest(
+            categoriesTitleHtml,
+            function (categoriesTitleHtml) {
+                $ajaxUtils.sendGetRequest(
+                    categoryHtml,
+                    function (categoryHtml) {
+                        switchMenuToActive();
+                        var categoriesViewHtml =
+                            buildCategoriesViewHtml(categories, categoriesTitleHtml, categoryHtml);
+                        insertHtml("#main-content", categoriesViewHtml);
+                    },
+                    false);
+            },
+            false);
     }
 
     function buildCategoriesViewHtml(categories, categoriesTitleHtml, categoryHtml) {
@@ -109,14 +123,20 @@ $(function () {
     }
 
     function buildAndShowMenuItemsHTML(categoryMenuItems) {
-        $ajaxUtils.sendGetRequest(menuItemsTitleHtml, function (menuItemsTitleHtml) {
-            $ajaxUtils.sendGetRequest(menuItemHtml, function (menuItemHtml) {
-                switchMenuToActive();
-
-                var menuItemsViewHtml = buildMenuItemsViewHtml(categoryMenuItems, menuItemsTitleHtml, menuItemHtml);
-                insertHtml("#main-content", menuItemsViewHtml);
-            }, false);
-        }, false);
+        $ajaxUtils.sendGetRequest(
+            menuItemsTitleHtml,
+            function (menuItemsTitleHtml) {
+                $ajaxUtils.sendGetRequest(
+                    menuItemHtml,
+                    function (menuItemHtml) {
+                        switchMenuToActive();
+                        var menuItemsViewHtml =
+                            buildMenuItemsViewHtml(categoryMenuItems, menuItemsTitleHtml, menuItemHtml);
+                        insertHtml("#main-content", menuItemsViewHtml);
+                    },
+                    false);
+            },
+            false);
     }
 
     function buildMenuItemsViewHtml(categoryMenuItems, menuItemsTitleHtml, menuItemHtml) {
@@ -154,7 +174,6 @@ $(function () {
         if (!priceValue) {
             return insertProperty(html, pricePropName, "");
         }
-
         priceValue = "$" + priceValue.toFixed(2);
         html = insertProperty(html, pricePropName, priceValue);
         return html;
@@ -164,11 +183,11 @@ $(function () {
         if (!portionValue) {
             return insertProperty(html, portionPropName, "");
         }
-
         portionValue = "(" + portionValue + ")";
         html = insertProperty(html, portionPropName, portionValue);
         return html;
     }
 
     global.$dc = dc;
+
 })(window);
